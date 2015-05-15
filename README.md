@@ -3,4 +3,4 @@ All in one social media application for Android. Goal is to combine the feeds of
 
 Implemented:
 #Twitter
-Twitter provides a TwitterAPIClient with Fabric. Read the [Twitter Documentation](https://dev.twitter.com/twitter-kit/android/api) for more information.
+Twitter provides a Twitter API Client with Fabric. Read the [Twitter Documentation](https://dev.twitter.com/twitter-kit/android/api) for more information.
