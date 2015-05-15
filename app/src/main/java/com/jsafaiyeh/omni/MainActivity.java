@@ -1,5 +1,6 @@
 package com.jsafaiyeh.omni;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,11 +9,13 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.crashlytics.android.Crashlytics;
+import com.github.mrengineer13.snackbar.SnackBar;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterApiClient;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
@@ -35,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TWITTER_SECRET = "69Pkdo6QuML5EuekI9orwotv2U50c8oq8rGv1jqXuAw4RbEUbH";
     private TwitterLoginButton loginButton;
     private LinearLayout mLinearLayout;
+    private Activity mActivity;
     private Context mContext;
 
 
@@ -44,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Crashlytics(), new Twitter(authConfig), new TweetUi());
         setContentView(R.layout.activity_main);
+
+        mActivity = this;
         mContext = this;
 
         loginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
@@ -55,46 +61,15 @@ public class MainActivity extends AppCompatActivity {
                 mLinearLayout = (LinearLayout) findViewById(R.id.main_linear_view);
                 mLinearLayout.removeView(loginButton);
 
-                TwitterApiClient twitterApiClient = new TwitterApiClient(result.data);
-                twitterApiClient.getStatusesService().homeTimeline(35, null, null, null, null, null, null, new Callback<List<Tweet>>() {
-                    @Override
-                    public void success(Result<List<Tweet>> result) {
-                        final List<Long> tweetIds = new ArrayList<>();
-                        for (Tweet t : result.data) {
-                            tweetIds.add(t.getId());
-                        }
-
-                        TweetUtils.loadTweets(tweetIds, new LoadCallback<List<Tweet>>() {
-                            int i = 0;
-
-                            @Override
-                            public void success(List<Tweet> tweets) {
-                                for (Tweet tweet : tweets) {
-                                    View view = new TweetView(mContext, tweet);
-                                    if (i != 0)
-                                        view.setPadding(0, 50, 0, 0);
-                                    mLinearLayout.addView(view);
-                                    i++;
-                                }
-                            }
-
-                            @Override
-                            public void failure(TwitterException exception) {
-                                // Toast.makeText(...).show();
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void failure(TwitterException e) {
-
-                    }
-                });
+                loadTweets(result.data);
             }
 
             @Override
             public void failure(TwitterException exception) {
-                // Do something on failure
+                new SnackBar.Builder(mActivity)
+                        .withMessage("Twitter Login Failed.")
+                        .withBackgroundColorId(R.color.tw__blue_pressed)
+                        .show();
             }
         });
     }
@@ -105,5 +80,43 @@ public class MainActivity extends AppCompatActivity {
         loginButton.onActivityResult(requestCode, resultCode, data);
     }
 
+    private void loadTweets(TwitterSession result) {
+
+        TwitterApiClient twitterApiClient = new TwitterApiClient(result);
+        twitterApiClient.getStatusesService().homeTimeline(35, null, null, null, null, null, null, new Callback<List<Tweet>>() {
+            @Override
+            public void success(Result<List<Tweet>> result) {
+                final List<Long> tweetIds = new ArrayList<>();
+                for (Tweet t : result.data) {
+                    tweetIds.add(t.getId());
+                }
+
+                TweetUtils.loadTweets(tweetIds, new LoadCallback<List<Tweet>>() {
+                    int i = 0;
+
+                    @Override
+                    public void success(List<Tweet> tweets) {
+                        for (Tweet tweet : tweets) {
+                            View view = new TweetView(mContext, tweet);
+                            if (i != 0)
+                                view.setPadding(0, 50, 0, 0);
+                            mLinearLayout.addView(view);
+                            i++;
+                        }
+                    }
+
+                    @Override
+                    public void failure(TwitterException exception) {
+                        // Toast.makeText(...).show();
+                    }
+                });
+            }
+
+            @Override
+            public void failure(TwitterException e) {
+
+            }
+        });
+    }
 
 }
