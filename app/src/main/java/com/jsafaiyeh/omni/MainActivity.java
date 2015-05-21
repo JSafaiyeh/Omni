@@ -15,7 +15,6 @@ import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterApiClient;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
-import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
@@ -25,7 +24,10 @@ import com.twitter.sdk.android.tweetui.TweetUi;
 import com.twitter.sdk.android.tweetui.TweetUtils;
 import com.twitter.sdk.android.tweetui.TweetView;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import io.fabric.sdk.android.Fabric;
@@ -91,23 +93,48 @@ public class MainActivity extends AppCompatActivity {
                     tweetIds.add(t.getId());
                 }
 
+
                 TweetUtils.loadTweets(tweetIds, new LoadCallback<List<Tweet>>() {
                     int i = 0;
 
                     @Override
                     public void success(List<Tweet> tweets) {
+                        ArrayList<Post> posts = new ArrayList<Post>();
                         for (Tweet tweet : tweets) {
-                            View view = new TweetView(mContext, tweet);
-                            if (i != 0)
-                                view.setPadding(0, 50, 0, 0);
-                            mLinearLayout.addView(view);
-                            i++;
+
+                            posts.add(new TwitterPost(tweet));
+
+                        }
+
+                        Collections.sort(posts, new Comparator<Post>() {
+                            @Override
+                            public int compare(Post lhs, Post rhs) {
+                                try {
+                                    return rhs.getTimeStamp().compareTo(lhs.getTimeStamp());
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                                return 0;
+                            }
+                        });
+
+                        for (Post p : posts) {
+                            if (p instanceof TwitterPost) {
+                                View view = new TweetView(mContext, ((TwitterPost) p).getTweet());
+                                if (i != 0)
+                                    view.setPadding(0, 50, 0, 0);
+                                mLinearLayout.addView(view);
+                                i++;
+                            }
                         }
                     }
 
                     @Override
                     public void failure(TwitterException exception) {
-                        // Toast.makeText(...).show();
+                        new SnackBar.Builder(mActivity)
+                                .withBackgroundColorId(R.color.tw__blue_pressed)
+                                .withMessage("Error Loading Tweets")
+                                .show();
                     }
                 });
             }
