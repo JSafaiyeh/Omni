@@ -1,6 +1,12 @@
 package com.jsafaiyeh.omni;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
+import android.view.View;
+import android.widget.LinearLayout;
+
 import com.twitter.sdk.android.core.models.Tweet;
+import com.twitter.sdk.android.tweetui.TweetView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -27,5 +33,22 @@ public class TwitterPost extends Post {
         SimpleDateFormat sf = new SimpleDateFormat(TWITTER, Locale.ENGLISH);
         sf.setLenient(true);
         return sf.parse(timeStamp);
+    }
+
+    @Override
+    public void addToFeed(Context mContext, LinearLayout mLinearLayout) {
+        View view = new TweetView(mContext, tweet);
+        view.setPadding(0, 50, 0, 0);
+        mLinearLayout.addView(view);
+    }
+
+    @Override
+    public int compareTo(@NonNull Object another) {
+        try {
+            return ((TwitterPost) another).getTimeStamp().compareTo(getTimeStamp());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }

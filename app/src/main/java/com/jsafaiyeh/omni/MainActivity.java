@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.widget.LinearLayout;
 
 import com.crashlytics.android.Crashlytics;
@@ -22,12 +21,9 @@ import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.tweetui.LoadCallback;
 import com.twitter.sdk.android.tweetui.TweetUi;
 import com.twitter.sdk.android.tweetui.TweetUtils;
-import com.twitter.sdk.android.tweetui.TweetView;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import io.fabric.sdk.android.Fabric;
@@ -95,37 +91,20 @@ public class MainActivity extends AppCompatActivity {
 
 
                 TweetUtils.loadTweets(tweetIds, new LoadCallback<List<Tweet>>() {
-                    int i = 0;
 
                     @Override
                     public void success(List<Tweet> tweets) {
-                        ArrayList<Post> posts = new ArrayList<Post>();
+
+                        ArrayList<Post> posts = new ArrayList<>();
+
                         for (Tweet tweet : tweets) {
-
                             posts.add(new TwitterPost(tweet));
-
                         }
 
-                        Collections.sort(posts, new Comparator<Post>() {
-                            @Override
-                            public int compare(Post lhs, Post rhs) {
-                                try {
-                                    return rhs.getTimeStamp().compareTo(lhs.getTimeStamp());
-                                } catch (ParseException e) {
-                                    e.printStackTrace();
-                                }
-                                return 0;
-                            }
-                        });
+                        Collections.sort(posts);
 
                         for (Post p : posts) {
-                            if (p instanceof TwitterPost) {
-                                View view = new TweetView(mContext, ((TwitterPost) p).getTweet());
-                                if (i != 0)
-                                    view.setPadding(0, 50, 0, 0);
-                                mLinearLayout.addView(view);
-                                i++;
-                            }
+                            p.addToFeed(mContext, mLinearLayout);
                         }
                     }
 
