@@ -4,7 +4,6 @@ import android.content.Context;
 import android.widget.LinearLayout;
 
 import java.text.ParseException;
-import java.util.Comparator;
 import java.util.Date;
 
 abstract class Post implements Comparable {

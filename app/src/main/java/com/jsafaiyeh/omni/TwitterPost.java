@@ -38,7 +38,7 @@ public class TwitterPost extends Post {
     @Override
     public void addToFeed(Context mContext, LinearLayout mLinearLayout) {
         View view = new TweetView(mContext, tweet);
-        view.setPadding(0, 50, 0, 0);
+        view.setPadding(32, 50, 32, 0);
         mLinearLayout.addView(view);
     }
 
