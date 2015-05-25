@@ -4,4 +4,10 @@
     <color name="colorPrimary">#FF8F00</color>
     <color name="colorPrimaryDark">#FF6F00</color>
     <color name="background">#CFD8DC</color>
+
+    <string name="title_activity_feed">Omni</string>
+    <string name="title_activity_main">Login</string>
+    <string name="action_settings">Settings</string>
+    <string name="TWITTER_KEY">WVjkb954bIEDdxCzDgO6lUJGo</string>
+    <string name="TWITTER_SECRET">69Pkdo6QuML5EuekI9orwotv2U50c8oq8rGv1jqXuAw4RbEUbH</string>
 </resources>
