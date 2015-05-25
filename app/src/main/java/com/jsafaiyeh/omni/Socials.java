@@ -64,10 +64,7 @@ public class Socials {
 
             @Override
             public void failure(TwitterException e) {
-                new SnackBar.Builder(mActivity)
-                        .withBackgroundColorId(R.color.tw__blue_pressed)
-                        .withMessage("Error Loading Tweets")
-                        .show();
+
             }
         });
     }
