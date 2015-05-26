@@ -77,7 +77,7 @@ public class MainActivity extends Activity {
             public void onCancel() {
                 new SnackBar.Builder(mActivity)
                         .withMessage("Facebook Login Canceled.")
-                        .withBackgroundColorId(R.color.com_facebook_button_background_color_pressed)
+                        .withBackgroundColorId(R.color.com_facebook_button_background_color)
                         .show();
             }
 
@@ -85,7 +85,7 @@ public class MainActivity extends Activity {
             public void onError(FacebookException e) {
                 new SnackBar.Builder(mActivity)
                         .withMessage("Facebook Login Error.")
-                        .withBackgroundColorId(R.color.com_facebook_button_background_color_pressed)
+                        .withBackgroundColorId(R.color.com_facebook_button_background_color)
                         .show();
             }
         });
