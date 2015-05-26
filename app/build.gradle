@@ -47,4 +47,5 @@ dependencies {
         transitive = true;
     }
     compile 'com.github.mrengineer13:snackbar:1.2.0'
+    compile 'com.facebook.android:facebook-android-sdk:4.0.0'
 }

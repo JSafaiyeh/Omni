@@ -37,4 +37,6 @@ public class FeedActivity extends AppCompatActivity {
         Socials.loadTweets(mContext, mLinearLayout, getParent(), twitterSession);
     }
 
+    @Override
+    public void onBackPressed() {}
 }

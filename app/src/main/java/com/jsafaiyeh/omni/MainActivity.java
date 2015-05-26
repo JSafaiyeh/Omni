@@ -1,10 +1,18 @@
 package com.jsafaiyeh.omni;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.github.mrengineer13.snackbar.SnackBar;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
@@ -18,9 +26,11 @@ import com.twitter.sdk.android.tweetui.TweetUi;
 import io.fabric.sdk.android.Fabric;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
-    private TwitterLoginButton loginButton;
+    private TwitterLoginButton mTwitterLoginButton;
+    private CallbackManager callbackManager;
+    private Activity mActivity;
 
 
     @Override
@@ -28,10 +38,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         TwitterAuthConfig authConfig = new TwitterAuthConfig(getString(R.string.TWITTER_KEY), getString(R.string.TWITTER_SECRET));
         Fabric.with(this, new Crashlytics(), new Twitter(authConfig), new TweetUi());
+        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_main);
 
-        loginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
-        loginButton.setCallback(new Callback<TwitterSession>() {
+        mActivity = this;
+
+        mTwitterLoginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
+        mTwitterLoginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
                 Intent i = new Intent(getBaseContext(), FeedActivity.class);
@@ -44,9 +57,35 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void failure(TwitterException exception) {
-                new SnackBar.Builder(getParent())
+                new SnackBar.Builder(mActivity)
                         .withMessage("Twitter Login Failed.")
                         .withBackgroundColorId(R.color.tw__blue_pressed)
+                        .show();
+            }
+        });
+
+        callbackManager = CallbackManager.Factory.create();
+        LoginButton mFacebookLoginButton = (LoginButton) findViewById(R.id.facebook_login_button);
+        mFacebookLoginButton.setPadding(70, 50, 70, 50);
+        mFacebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+
+            }
+
+            @Override
+            public void onCancel() {
+                new SnackBar.Builder(mActivity)
+                        .withMessage("Facebook Login Canceled.")
+                        .withBackgroundColorId(R.color.com_facebook_button_background_color_pressed)
+                        .show();
+            }
+
+            @Override
+            public void onError(FacebookException e) {
+                new SnackBar.Builder(mActivity)
+                        .withMessage("Facebook Login Error.")
+                        .withBackgroundColorId(R.color.com_facebook_button_background_color_pressed)
                         .show();
             }
         });
@@ -55,8 +94,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        loginButton.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 140) mTwitterLoginButton.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 64206)callbackManager.onActivityResult(requestCode, requestCode, data);
     }
-
-
 }
