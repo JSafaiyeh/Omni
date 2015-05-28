@@ -21,7 +21,7 @@ import java.util.List;
 
 public class Socials {
 
-    public static void loadTweets(final Context mContext, final LinearLayout mLinearLayout, final Activity mActivity, TwitterSession result) {
+    public static void loadTweets(final Context mContext, final LinearLayout mLinearLayout, final Activity mActivity, final ArrayList<Post> posts, TwitterSession result) {
 
         TwitterApiClient twitterApiClient = new TwitterApiClient(result);
         twitterApiClient.getStatusesService().homeTimeline(35, null, null, null, null, null, null, new Callback<List<Tweet>>() {
@@ -38,11 +38,8 @@ public class Socials {
                     @Override
                     public void success(List<Tweet> tweets) {
 
-                        ArrayList<Post> posts = new ArrayList<>();
-
                         for (Tweet tweet : tweets) {
                             posts.add(new TwitterPost(tweet));
-                            Log.d("Twitter", tweet.getId() + "");
                         }
 
                         Collections.sort(posts);
@@ -64,7 +61,10 @@ public class Socials {
 
             @Override
             public void failure(TwitterException e) {
-
+                new SnackBar.Builder(mActivity)
+                        .withBackgroundColorId(R.color.tw__blue_pressed)
+                        .withMessage("Error Loading Tweets")
+                        .show();
             }
         });
     }

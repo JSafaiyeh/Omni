@@ -11,6 +11,9 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.github.mrengineer13.snackbar.SnackBar;
@@ -22,6 +25,8 @@ import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 import com.twitter.sdk.android.tweetui.TweetUi;
+
+import org.json.JSONObject;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -67,10 +72,17 @@ public class MainActivity extends Activity {
         callbackManager = CallbackManager.Factory.create();
         LoginButton mFacebookLoginButton = (LoginButton) findViewById(R.id.facebook_login_button);
         mFacebookLoginButton.setPadding(70, 50, 70, 50);
+        mFacebookLoginButton.setReadPermissions("read_stream");
         mFacebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-
+                GraphRequest request = GraphRequest.newGraphPathRequest(loginResult.getAccessToken(), "/me/home", new GraphRequest.Callback() {
+                    @Override
+                    public void onCompleted(GraphResponse graphResponse) {
+                        Intent i = new Intent(getBaseContext(), FeedActivity.class);
+                    }
+                });
+                request.executeAsync();
             }
 
             @Override
@@ -95,6 +107,6 @@ public class MainActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 140) mTwitterLoginButton.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 64206)callbackManager.onActivityResult(requestCode, requestCode, data);
+        if (requestCode == 64206)callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 }

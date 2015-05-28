@@ -13,6 +13,9 @@ import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.tweetui.TweetUi;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import io.fabric.sdk.android.Fabric;
 
 
@@ -27,6 +30,7 @@ public class FeedActivity extends AppCompatActivity {
 
         LinearLayout mLinearLayout = (LinearLayout) findViewById(R.id.feed_linear_layout);
         Context mContext = this;
+        ArrayList<Post> posts = new ArrayList<>();
 
         Intent i = getIntent();
         TwitterAuthToken twitterAuthToken = new TwitterAuthToken(i.getStringExtra("Twitter AuthToken"), i.getStringExtra("Twitter AuthSecret"));
@@ -34,7 +38,7 @@ public class FeedActivity extends AppCompatActivity {
         String userName = i.getStringExtra("Twitter UserName");
 
         TwitterSession twitterSession = new TwitterSession(twitterAuthToken, userID, userName);
-        Socials.loadTweets(mContext, mLinearLayout, getParent(), twitterSession);
+        Socials.loadTweets(mContext, mLinearLayout, getParent(), posts, twitterSession);
     }
 
     @Override
