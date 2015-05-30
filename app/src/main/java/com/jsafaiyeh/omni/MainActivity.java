@@ -1,9 +1,9 @@
 package com.jsafaiyeh.omni;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -13,10 +13,13 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
-import com.facebook.HttpMethod;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.github.mrengineer13.snackbar.SnackBar;
+import com.restfb.DefaultFacebookClient;
+import com.restfb.FacebookClient;
+import com.restfb.Version;
+import com.restfb.types.User;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -27,6 +30,10 @@ import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 import com.twitter.sdk.android.tweetui.TweetUi;
 
 import org.json.JSONObject;
+
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -53,6 +60,7 @@ public class MainActivity extends Activity {
             @Override
             public void success(Result<TwitterSession> result) {
                 Intent i = new Intent(getBaseContext(), FeedActivity.class);
+                i.putExtra("Social", "Twitter");
                 i.putExtra("Twitter AuthToken", result.data.getAuthToken().token);
                 i.putExtra("Twitter AuthSecret", result.data.getAuthToken().secret);
                 i.putExtra("Twitter UserName", result.data.getUserName());
@@ -66,6 +74,7 @@ public class MainActivity extends Activity {
                         .withMessage("Twitter Login Failed.")
                         .withBackgroundColorId(R.color.tw__blue_pressed)
                         .show();
+                exception.printStackTrace();
             }
         });
 
@@ -76,13 +85,10 @@ public class MainActivity extends Activity {
         mFacebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                GraphRequest request = GraphRequest.newGraphPathRequest(loginResult.getAccessToken(), "/me/home", new GraphRequest.Callback() {
-                    @Override
-                    public void onCompleted(GraphResponse graphResponse) {
-                        Intent i = new Intent(getBaseContext(), FeedActivity.class);
-                    }
-                });
-                request.executeAsync();
+                Intent i = new Intent(getBaseContext(), FeedActivity.class);
+                i.putExtra("Social", "Facebook");
+                i.putExtra("Facebook AccessToken", loginResult.getAccessToken().getToken());
+                startActivity(i);
             }
 
             @Override
@@ -107,6 +113,6 @@ public class MainActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 140) mTwitterLoginButton.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 64206)callbackManager.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 64206) callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 }

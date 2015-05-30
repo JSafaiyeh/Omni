@@ -6,7 +6,7 @@ import android.widget.LinearLayout;
 import java.text.ParseException;
 import java.util.Date;
 
-abstract class Post implements Comparable {
+abstract class SocialCustomPost implements Comparable {
 
     public abstract Date getTimeStamp() throws ParseException;
 

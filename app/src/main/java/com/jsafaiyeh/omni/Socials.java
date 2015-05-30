@@ -2,7 +2,6 @@ package com.jsafaiyeh.omni;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.widget.LinearLayout;
 
 import com.github.mrengineer13.snackbar.SnackBar;
@@ -21,7 +20,7 @@ import java.util.List;
 
 public class Socials {
 
-    public static void loadTweets(final Context mContext, final LinearLayout mLinearLayout, final Activity mActivity, final ArrayList<Post> posts, TwitterSession result) {
+    public static void loadTweets(final Context mContext, final LinearLayout mLinearLayout, final Activity mActivity, final ArrayList<SocialCustomPost> socialCustomPosts, TwitterSession result) {
 
         TwitterApiClient twitterApiClient = new TwitterApiClient(result);
         twitterApiClient.getStatusesService().homeTimeline(35, null, null, null, null, null, null, new Callback<List<Tweet>>() {
@@ -39,12 +38,12 @@ public class Socials {
                     public void success(List<Tweet> tweets) {
 
                         for (Tweet tweet : tweets) {
-                            posts.add(new TwitterPost(tweet));
+                            socialCustomPosts.add(new TwitterSocialCustomPost(tweet));
                         }
 
-                        Collections.sort(posts);
+                        Collections.sort(socialCustomPosts);
 
-                        for (Post p : posts) {
+                        for (SocialCustomPost p : socialCustomPosts) {
                             p.addToFeed(mContext, mLinearLayout);
                         }
                     }

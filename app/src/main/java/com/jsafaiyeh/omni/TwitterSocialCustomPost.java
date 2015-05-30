@@ -13,12 +13,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class TwitterPost extends Post {
+public class TwitterSocialCustomPost extends SocialCustomPost {
 
     private Tweet tweet;
     private String timeStamp;
 
-    public TwitterPost(Tweet tweet) {
+    public TwitterSocialCustomPost(Tweet tweet) {
         this.tweet = tweet;
         timeStamp = tweet.createdAt;
     }
@@ -45,7 +45,7 @@ public class TwitterPost extends Post {
     @Override
     public int compareTo(@NonNull Object another) {
         try {
-            return ((TwitterPost) another).getTimeStamp().compareTo(getTimeStamp());
+            return ((TwitterSocialCustomPost) another).getTimeStamp().compareTo(getTimeStamp());
         } catch (ParseException e) {
             e.printStackTrace();
         }
