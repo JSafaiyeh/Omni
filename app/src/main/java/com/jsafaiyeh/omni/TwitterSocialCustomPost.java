@@ -27,6 +27,9 @@ public class TwitterSocialCustomPost extends SocialCustomPost {
         return tweet;
     }
 
+    public String getSocial() { return"Twitter"; }
+
+
     @Override
     public Date getTimeStamp() throws ParseException {
         final String TWITTER = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
@@ -45,7 +48,7 @@ public class TwitterSocialCustomPost extends SocialCustomPost {
     @Override
     public int compareTo(@NonNull Object another) {
         try {
-            return ((TwitterSocialCustomPost) another).getTimeStamp().compareTo(getTimeStamp());
+            return ((SocialCustomPost) another).getTimeStamp().compareTo(getTimeStamp());
         } catch (ParseException e) {
             e.printStackTrace();
         }

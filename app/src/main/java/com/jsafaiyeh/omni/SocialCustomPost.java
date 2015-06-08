@@ -12,4 +12,5 @@ abstract class SocialCustomPost implements Comparable {
 
     public abstract void addToFeed(Context mContext, LinearLayout mLinearLayout);
 
+    public abstract String getSocial();
 }

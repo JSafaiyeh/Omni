@@ -1,25 +1,24 @@
 package com.jsafaiyeh.omni;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.StrictMode;
-import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewManager;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.github.mrengineer13.snackbar.SnackBar;
-import com.restfb.DefaultFacebookClient;
-import com.restfb.FacebookClient;
-import com.restfb.Version;
-import com.restfb.types.User;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -29,20 +28,17 @@ import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 import com.twitter.sdk.android.tweetui.TweetUi;
 
-import org.json.JSONObject;
-
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-
 import io.fabric.sdk.android.Fabric;
 
 
 public class MainActivity extends Activity {
 
     private TwitterLoginButton mTwitterLoginButton;
+    private LoginButton mFacebookLoginButton;
     private CallbackManager callbackManager;
+    private TextView mTextView;
     private Activity mActivity;
+    private boolean signedWithOne = false;
 
 
     @Override
@@ -54,18 +50,32 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         mActivity = this;
+        mTextView = (TextView) findViewById(R.id.title);
 
+        final Intent i = new Intent(getBaseContext(), FeedActivity.class);
         mTwitterLoginButton = (TwitterLoginButton) findViewById(R.id.twitter_login_button);
         mTwitterLoginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
-                Intent i = new Intent(getBaseContext(), FeedActivity.class);
-                i.putExtra("Social", "Twitter");
                 i.putExtra("Twitter AuthToken", result.data.getAuthToken().token);
                 i.putExtra("Twitter AuthSecret", result.data.getAuthToken().secret);
                 i.putExtra("Twitter UserName", result.data.getUserName());
                 i.putExtra("Twitter UserID", result.data.getUserId());
-                startActivity(i);
+                if (signedWithOne)
+                    startActivity(i);
+                else {
+                    signedWithOne = true;
+                    ((ViewManager)mTwitterLoginButton.getParent()).removeView(mTwitterLoginButton);
+
+                    RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(mFacebookLoginButton.getLayoutParams());
+                    layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+                    mFacebookLoginButton.setLayoutParams(layoutParams);
+
+                    RelativeLayout.LayoutParams layoutParams1 = new RelativeLayout.LayoutParams(mTextView.getLayoutParams());
+                    layoutParams1.addRule(RelativeLayout.ABOVE, R.id.facebook_login_button);
+                    layoutParams1.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+                    mTextView.setLayoutParams(layoutParams1);
+                }
             }
 
             @Override
@@ -79,16 +89,19 @@ public class MainActivity extends Activity {
         });
 
         callbackManager = CallbackManager.Factory.create();
-        LoginButton mFacebookLoginButton = (LoginButton) findViewById(R.id.facebook_login_button);
+        mFacebookLoginButton = (LoginButton) findViewById(R.id.facebook_login_button);
         mFacebookLoginButton.setPadding(70, 50, 70, 50);
         mFacebookLoginButton.setReadPermissions("read_stream");
         mFacebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Intent i = new Intent(getBaseContext(), FeedActivity.class);
-                i.putExtra("Social", "Facebook");
                 i.putExtra("Facebook AccessToken", loginResult.getAccessToken().getToken());
-                startActivity(i);
+                if (signedWithOne)
+                    startActivity(i);
+                else {
+                    signedWithOne = true;
+                    ((ViewManager) mFacebookLoginButton.getParent()).removeView(mFacebookLoginButton);
+                }
             }
 
             @Override
@@ -107,6 +120,18 @@ public class MainActivity extends Activity {
                         .show();
             }
         });
+
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        if (accessToken != null) {
+            i.putExtra("Facebook AccessToken", accessToken.getToken());
+            if (signedWithOne)
+                startActivity(i);
+            else {
+                signedWithOne = true;
+                ((ViewManager) mFacebookLoginButton.getParent()).removeView(mFacebookLoginButton);
+            }
+        }
+
     }
 
     @Override
