@@ -51,7 +51,6 @@ public class Socials {
                         Collections.sort(socialCustomPosts);
 
                         for (SocialCustomPost socialCustomPost : socialCustomPosts) {
-                            Log.d("Type", socialCustomPost.getSocial());
                             socialCustomPost.addToFeed(mContext, mLinearLayout);
                         }
 
