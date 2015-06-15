@@ -1,7 +1,9 @@
 # Omni
 All in one social media application for Android.
 
-![](https://github.com/JSafaiyeh/Omni/blob/master/screen_shots/home_screen.png "Login Activity")
+Login Activity             |  Feed Activity
+:-------------------------:|:-------------------------:
+![](https://github.com/JSafaiyeh/Omni/blob/master/screen_shots/home_screen.png)  |  ![](https://github.com/JSafaiyeh/Omni/blob/master/screen_shots/feed_screen.png)
 
 Implemented:
 #Twitter
