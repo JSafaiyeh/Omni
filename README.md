@@ -1,6 +1,8 @@
 # Omni
 All in one social media application for Android.
 
+![](https://github.com/JSafaiyeh/Omni/blob/master/screen_shots/home_screen.png "Login Activity")
+
 Implemented:
 #Twitter
 Twitter provides a Twitter API Client with Fabric. 
